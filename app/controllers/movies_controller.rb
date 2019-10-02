@@ -12,26 +12,74 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = ['G','PG','PG-13','R']
+    @selected_ratings = []
+    
+    @sort_filter = ""
+    @use_session = false
 
-    if params[:sort] == 'title'
-      @movies = Movie.order('title ASC')
-      @title_hilite = 'hilite'
-    elsif params[:sort] == 'release'
-      @movies = Movie.order('release_date ASC')
-      @release_hilite = 'hilite'
+    if (params[:sort]) 
+      @sort_filter = params[:sort]
+      session[:sort] = @sort_filter
+    elsif (session[:sort])
+      @sort_filter = session[:sort]
+      use_session = true
+    else 
+      @sort_filter = nil
+    end
+    
+    if (params[:ratings])
+      params[:ratings].each {|key, value| @selected_ratings << key}
+      session[:ratings] = @selected_ratings
+    elsif (session[:ratings])
+      @selected_ratings = session[:ratings]
+      use_session = true
     else
-      # params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
-      #                   @movies = Movie.all
-      if (params[:ratings]) 
-        @selected_ratings = params[:ratings].keys
-        @selected_ratings.each do |rating|
-          params[rating] = true
-        end
-        @movies = Movie.where(rating: params[:ratings].keys)
-      else 
+      @selected_ratings = nil
+    end
+    
+    @selected_ratings.each do |rating|
+      params[rating] = true
+    end
+    
+    if (@sort_filter == 'title')
+      @title_hilite = 'hilite'
+    elsif (@sort_filter == 'release_date')
+      @release_hilite = 'hilite'
+    end
+      
+    if (use_session)
+      redirect_to movies_path :ratings=>@selected_ratings, :sort=>@sort_filter
+    else
+      if (@selected_ratings)
+        @movies = Movie.where(:rating => @selected_ratings).order(@sort_filter)
+      elsif (@sort_filter)
+        @movies = Movie.order(@sort_filter)
+      else
         @movies = Movie.all
       end
     end
+    
+
+    # if params[:sort] == 'title'
+    #   session[:sort] = 'title ASC'
+    #   @movies = Movie.order(session[:sort])
+    #   @title_hilite = 'hilite'
+    # elsif params[:sort] == 'release'
+    #   @movies = Movie.order('release_date ASC')
+    #   @release_hilite = 'hilite'
+    # else
+    #   # params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
+    #   #                   @movies = Movie.all
+    #   if (params[:ratings]) 
+    #     @selected_ratings = params[:ratings].keys
+    #     @selected_ratings.each do |rating|
+    #       params[rating] = true
+    #     end
+    #     @movies = Movie.where(rating: params[:ratings].keys)
+    #   else 
+    #     @movies = Movie.all
+    #   end
+    # end
   end
 
   def new
