@@ -12,7 +12,8 @@ class MoviesController < ApplicationController
 
   def index
     # reset_session
-    @all_ratings = ['G','PG','PG-13','R']
+    # @all_ratings = ['G','PG','PG-13','R']
+    @all_ratings = Movie.get_ratings
     @selected_ratings = []
     
     @sort_filter = ""
@@ -39,7 +40,7 @@ class MoviesController < ApplicationController
     end
     
     if (@selected_ratings)
-      @selected_ratings.each do |rating|
+      @selected_ratings.map(&:upcase).each do |rating|
         params[rating] = true
       end
     end
@@ -54,7 +55,8 @@ class MoviesController < ApplicationController
       redirect_to movies_path :ratings=>@selected_ratings, :sort=>@sort_filter
     else
       if (@selected_ratings)
-        @movies = Movie.where(:rating => @selected_ratings).order(@sort_filter)
+        # @movies = Movie.where(:rating => @selected_ratings).order(@sort_filter)
+        @movies = Movie.with_ratings(@selected_ratings).order(@sort_filter)
       elsif (@sort_filter)
         @movies = Movie.order(@sort_filter)
       else
