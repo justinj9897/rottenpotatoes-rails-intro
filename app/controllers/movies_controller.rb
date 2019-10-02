@@ -61,28 +61,6 @@ class MoviesController < ApplicationController
         @movies = Movie.all
       end
     end
-    
-
-    # if params[:sort] == 'title'
-    #   session[:sort] = 'title ASC'
-    #   @movies = Movie.order(session[:sort])
-    #   @title_hilite = 'hilite'
-    # elsif params[:sort] == 'release'
-    #   @movies = Movie.order('release_date ASC')
-    #   @release_hilite = 'hilite'
-    # else
-    #   # params[:ratings] ? @movies = Movie.where(rating: params[:ratings].keys) :
-    #   #                   @movies = Movie.all
-    #   if (params[:ratings]) 
-    #     @selected_ratings = params[:ratings].keys
-    #     @selected_ratings.each do |rating|
-    #       params[rating] = true
-    #     end
-    #     @movies = Movie.where(rating: params[:ratings].keys)
-    #   else 
-    #     @movies = Movie.all
-    #   end
-    # end
   end
 
   def new
