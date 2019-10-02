@@ -11,6 +11,7 @@ class MoviesController < ApplicationController
   end
 
   def index
+    reset_session
     @all_ratings = ['G','PG','PG-13','R']
     @selected_ratings = []
     
@@ -22,7 +23,7 @@ class MoviesController < ApplicationController
       session[:sort] = @sort_filter
     elsif (session[:sort])
       @sort_filter = session[:sort]
-      use_session = true
+      @use_session = true
     else 
       @sort_filter = nil
     end
@@ -32,13 +33,15 @@ class MoviesController < ApplicationController
       session[:ratings] = @selected_ratings
     elsif (session[:ratings])
       @selected_ratings = session[:ratings]
-      use_session = true
+      @use_session = true
     else
       @selected_ratings = nil
     end
     
-    @selected_ratings.each do |rating|
-      params[rating] = true
+    if (@selected_ratings)
+      @selected_ratings.each do |rating|
+        params[rating] = true
+      end
     end
     
     if (@sort_filter == 'title')
@@ -47,7 +50,7 @@ class MoviesController < ApplicationController
       @release_hilite = 'hilite'
     end
       
-    if (use_session)
+    if (@use_session)
       redirect_to movies_path :ratings=>@selected_ratings, :sort=>@sort_filter
     else
       if (@selected_ratings)
