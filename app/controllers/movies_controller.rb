@@ -11,7 +11,7 @@ class MoviesController < ApplicationController
   end
 
   def index
-    reset_session
+    # reset_session
     @all_ratings = ['G','PG','PG-13','R']
     @selected_ratings = []
     
